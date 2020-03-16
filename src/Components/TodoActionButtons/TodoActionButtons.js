@@ -11,55 +11,62 @@ import {
 } from "../../actions";
 import {connect} from "react-redux";
 import "./TodoActionButtons.css";
+import {getFilterTodos, getTodos} from "../../selectors";
 
 
-const TodoActionButtons = ({
+const TodoActionButtonsComponent = ({
                                onRemoveAllTodoItems,
                                onRemoveCompleteTodoItems,
                                onShowCompleteTodoItems,
                                onShowIncompleteTodoItems,
                                onShowAllTodoItems,
                                onCompleteVisibleTodoItems,
-}) => {
-
-    return(
+                               todos,
+                               filterTodos,
+                           }) => (
         <div className="d-flex justify-content-center">
-            <Button onClick={() => onCompleteVisibleTodoItems()}  className="layout-button btn-warning">
+            <Button onClick={() => onCompleteVisibleTodoItems(filterTodos)}  className="layout-button btn-warning">
                 Complete visible Tasks
             </Button>
-            <Button className="layout-button btn-info" onClick={() => onShowCompleteTodoItems()}>
+            <Button className="todo-action-button btn-info" onClick={() => onShowCompleteTodoItems()}>
                 Show complete tasks
             </Button>
-            <Button className="layout-button btn-info" onClick={() => onShowIncompleteTodoItems()}>
+            <Button className="todo-action-button btn-info" onClick={() => onShowIncompleteTodoItems()}>
                 Show incomplete tasks
             </Button>
-            <Button className="layout-button btn-info" onClick={() => onShowAllTodoItems()}>
+            <Button className="todo-action-button btn-info" onClick={() => onShowAllTodoItems()}>
                 Show all tasks
             </Button>
-            <Button className="layout-button btn-danger" onClick={() => onRemoveCompleteTodoItems()}>
+            <Button className="todo-action-button btn-danger" onClick={() => onRemoveCompleteTodoItems(todos)}>
                 Remove all complete tasks
             </Button>
-            <Button className="layout-button btn-danger" onClick={() => onRemoveAllTodoItems()}>
+            <Button className="todo-action-button btn-danger" onClick={() => onRemoveAllTodoItems()}>
                 Remove all tasks
             </Button>
         </div>
-    )
-};
+    );
+
+const mapStateToProps = (state) => ({
+    todos: getTodos(state),
+    filterTodos: getFilterTodos(state),
+});
 
 const mapDispatchToProps = (dispatch) => ({
     onShowCompleteTodoItems: () => dispatch(filterCompleteItems()),
     onShowIncompleteTodoItems: () => dispatch(filterIncompleteItems()),
     onShowAllTodoItems: () => dispatch(filterAllItems()),
-    onRemoveCompleteTodoItems: () => dispatch(removeAllCompleteTodoItems()),
+    onRemoveCompleteTodoItems: (todos) => dispatch(removeAllCompleteTodoItems(todos)),
     onRemoveAllTodoItems: () => dispatch(removeAllTodoItems()),
-    onCompleteVisibleTodoItems: () => dispatch(completeVisibleTodoItems())
+    onCompleteVisibleTodoItems: (filterTodos) => dispatch(completeVisibleTodoItems(filterTodos))
 
 });
 
 const mergeProps = (
-        mapStateProps,
+        {todos, filterTodos},
         {onShowCompleteTodoItems, onShowIncompleteTodoItems, onRemoveCompleteTodoItems, onRemoveAllTodoItems, onShowAllTodoItems, onCompleteVisibleTodoItems},
         ) => ({
+    todos,
+    filterTodos,
     onShowCompleteTodoItems,
     onShowIncompleteTodoItems,
     onRemoveCompleteTodoItems,
@@ -68,4 +75,6 @@ const mergeProps = (
     onCompleteVisibleTodoItems,
 });
 
-export default connect(undefined, mapDispatchToProps, mergeProps)(TodoActionButtons);
+const TodoActionButtons = connect(mapStateToProps, mapDispatchToProps, mergeProps)(TodoActionButtonsComponent);
+
+export default TodoActionButtons;

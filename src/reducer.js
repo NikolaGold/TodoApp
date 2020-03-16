@@ -1,7 +1,9 @@
 import {combineReducers} from 'redux-immutable';
+import {Map} from "immutable";
+
 import {
     TODOS_FETCH_ITEM,
-    SET_NEW_TODO_ITEMS,
+    SET_NEW_TODO_ITEM,
     FILTER_COMPLETE_ITEMS,
     FILTER_INCOMPLETE_ITEMS,
     FILTER_ALL_ITEMS,
@@ -13,21 +15,55 @@ import {
     REMOVE_ALL_TODOS_FAILED,
     COMPLETE_VISIBLE_TODOS_FAILED,
     REMOVE_ALL_COMPLETE_TODO_ITEM_FAILED,
-
+    COMPLETE_TODO_ITEM,
+    REMOVE_TODO_ITEM,
+    CHANGE_TODO_ITEM,
+    REMOVE_ALL_TODO_ITEMS,
+    REMOVE_ALL_COMPLETE_TODO_ITEMS, COMPLETE_VISIBLE_TODO_ITEMS,
 } from "./actions";
 
-const setTodosReducer = (state = [], action) => {
+const todosReducer = (state = [], action) => {
     switch (action.type) {
         case TODOS_FETCH_ITEM:
             return action.todos;
-        case SET_NEW_TODO_ITEMS :
-            return action.todos;
+        case SET_NEW_TODO_ITEM:
+            return [Map(action.todo), ...state];
+        case COMPLETE_TODO_ITEM:
+            return state.map((item) => {
+                if (item.get('id') === action.id) {
+                    return item.set('completed', !action.complete)
+                } else {
+                    return item
+                }
+            });
+        case REMOVE_TODO_ITEM:
+            return state.filter((item) => item.get('id') !== action.id);
+        case CHANGE_TODO_ITEM:
+            return state.map((item) => {
+                if (item.get('id') === action.id) {
+                    return item.set('text', action.text)
+                } else {
+                    return item
+                }
+            });
+        case REMOVE_ALL_COMPLETE_TODO_ITEMS:
+            return state.filter((item) => !item.get('completed'));
+        case REMOVE_ALL_TODO_ITEMS:
+            return [];
+        case COMPLETE_VISIBLE_TODO_ITEMS:
+            return state.map((item) => {
+                if (action.filterTodos.includes(item) && !item.get('completed')) {
+                   return item.set('completed', true)
+                } else {
+                    return item;
+                }
+            });
         default:
             return state;
     }
 };
 
-const setFilterReducer = (state = '', action) => {
+const filterReducer = (state = '', action) => {
     switch (action.type) {
         case FILTER_COMPLETE_ITEMS:
             return {...state, filterItemsByStatus: 'complete'};
@@ -36,11 +72,11 @@ const setFilterReducer = (state = '', action) => {
         case FILTER_ALL_ITEMS:
             return {...state, filterItemsByStatus: 'all'};
         default:
-            return state;
+            return {...state, filterItemsByStatus: 'all'};
     }
 };
 
-const errorReducer = (state = '', action) => {
+const errorReducer = (state = {}, action) => {
     switch (action.type) {
         case TODOS_FETCH_FAILED:
             return {...state, errorMessage: action.message};
@@ -65,7 +101,7 @@ const errorReducer = (state = '', action) => {
 
 
 export const allReducer = combineReducers({
-    todos: setTodosReducer,
-    filter: setFilterReducer,
+    todos: todosReducer,
+    filter: filterReducer,
     error: errorReducer,
 });

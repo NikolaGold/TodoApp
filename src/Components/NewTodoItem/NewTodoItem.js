@@ -4,12 +4,15 @@ import {connect} from "react-redux";
 import Button from 'react-bootstrap/Button';
 
 
-const NewTodoItem = ({onAddTodoItem}) => {
+const NewTodoItemComponent = ({onAddTodoItem}) => {
 const [newTodoItem, setNewTodoItem] = useState('');
+    const handleClick = () => {
+        onAddTodoItem(newTodoItem);
+        setNewTodoItem('');
+    };
     const clickOnEnter = (event) => {
         if (event.keyCode === 13) {
-            onAddTodoItem(newTodoItem);
-            setNewTodoItem('');
+            handleClick();
         }
     };
 
@@ -17,11 +20,12 @@ const [newTodoItem, setNewTodoItem] = useState('');
         <div className="d-flex justify-content-center">
             <input
                 className="form-control"
-                type="text" value={newTodoItem}
+                type="text"
+                value={newTodoItem}
                 onChange={(event) => setNewTodoItem(event.target.value)}
                 onKeyDown={(e) => clickOnEnter(e)}
             />
-            <Button className="btn-success" onClick={() => {onAddTodoItem(newTodoItem); setNewTodoItem('')}}>
+            <Button className="btn-success" onClick={() => handleClick()}>
                 +
             </Button>
         </div>
@@ -37,4 +41,6 @@ const mergeProps = (mapStateProps, {onAddTodoItem}) => ({
     onAddTodoItem,
 });
 
-export default connect(undefined, mapDispatchToProps, mergeProps)(NewTodoItem);
+const NewTodoItem = connect(undefined, mapDispatchToProps, mergeProps)(NewTodoItemComponent);
+
+export default NewTodoItem;

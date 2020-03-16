@@ -6,7 +6,7 @@ export const REMOVE_ALL_TODO_ITEMS = 'REMOVE_ALL_TODO_ITEMS';
 export const REMOVE_ALL_COMPLETE_TODO_ITEMS = 'REMOVE_ALL_COMPLETE_TODO_ITEMS';
 export const CHANGE_TODO_ITEM = 'CHANGE_TODO_ITEM';
 export const COMPLETE_TODO_ITEM = 'COMPLETE_TODO_ITEM';
-export const SET_NEW_TODO_ITEMS = 'SET_NEW_TODO_ITEMS';
+export const SET_NEW_TODO_ITEM = 'SET_NEW_TODO_ITEM';
 export const COMPLETE_VISIBLE_TODO_ITEMS = 'COMPLETE_VISIBLE_TODO_ITEMS';
 
 export const FILTER_COMPLETE_ITEMS = 'FILTER_COMPLETE_ITEMS';
@@ -33,9 +33,9 @@ export const completeTodoItem = (complete, id) => ({
     id,
 });
 
-export const setNewTodoItems = (todos) => ({
-    type: SET_NEW_TODO_ITEMS,
-    todos,
+export const setNewTodoItem = (todo) => ({
+    type: SET_NEW_TODO_ITEM,
+    todo,
 });
 
 export const removeTodoItem = (id) => ({
@@ -47,8 +47,9 @@ export const removeAllTodoItems = () => ({
     type: REMOVE_ALL_TODO_ITEMS,
 });
 
-export const removeAllCompleteTodoItems = () => ({
+export const removeAllCompleteTodoItems = (todos) => ({
     type: REMOVE_ALL_COMPLETE_TODO_ITEMS,
+    todos,
 });
 
 export const changeTodoItem = (id, text) => ({
@@ -62,8 +63,9 @@ export const addTodoItem = (text) => ({
     text,
 });
 
-export const completeVisibleTodoItems = () => ({
+export const completeVisibleTodoItems = (filterTodos) => ({
     type: COMPLETE_VISIBLE_TODO_ITEMS,
+    filterTodos,
 });
 
 export const filterCompleteItems = () => ({

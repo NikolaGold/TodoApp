@@ -19,11 +19,11 @@ import {
     COMPLETE_VISIBLE_TODOS_FAILED,
     REMOVE_ALL_TODOS_FAILED,
     todosFetchItem,
-    setNewTodoItems,
+    setNewTodoItem,
     filterAllItems,
 } from "./actions";
 import {getTodos, getFilterTodos} from "./selectors";
-import {Api, fetchGetData, addTodoItem, changeTodoItem, removeTodoItem, completeTodoItem} from "./Api/Api"
+import {fetchGetData, addTodoItem, changeTodoItem, removeTodoItem, completeTodoItem, inCompleteTodoItem} from "./Api/Api"
 
 export const rootSaga = function* rootSaga() {
     yield takeLatest(TODOS_FETCH, fetchTodoListSaga);
@@ -38,7 +38,7 @@ export const rootSaga = function* rootSaga() {
 
 export const fetchTodoListSaga = function* fetchTodoListSaga() {
     try {
-        const todos = yield call(fetchGetData, Api.todos);
+        const todos = yield call(fetchGetData, 'todos');
         if (!todos.length) {
             yield put(filterAllItems())
         }
@@ -51,10 +51,8 @@ export const fetchTodoListSaga = function* fetchTodoListSaga() {
 
 export const addTodoItemSaga = function* addTodoItemSaga({text}){
     try {
-        const todos = yield select(getTodos);
         const newItem = yield call(addTodoItem, text);
-        const newTodoItems = [Map(newItem), ...todos];
-        yield put(setNewTodoItems(newTodoItems));
+        yield put(setNewTodoItem(newItem));
     }
     catch (e){
         yield put({type: ADD_TODD_ITEM_FAILED, message: e.message});
@@ -63,18 +61,11 @@ export const addTodoItemSaga = function* addTodoItemSaga({text}){
 
 export const completeTodoSaga = function* completeTodoSaga({complete, id}) {
     try {
-        const todos = yield select(getTodos);
-        const newTodoItems = todos.map((item) => {
-            let newItem;
-            if (item.get('id') === id) {
-                newItem = item.set('completed', !complete)
-            } else {
-                newItem = item
-            }
-            return newItem
-        });
-        yield put(setNewTodoItems(newTodoItems));
-        yield call(completeTodoItem, id, complete);
+        if(complete){
+            yield call(inCompleteTodoItem, id, complete);
+        } else {
+            yield call(completeTodoItem, id, complete);
+        }
     }
     catch (e) {
         yield put({type: COMPLETE_TODO_ITEM_FAILED, message: e.message});
@@ -84,9 +75,6 @@ export const completeTodoSaga = function* completeTodoSaga({complete, id}) {
 export const removeTodoItemSaga = function* removeTodoItemSaga({id}) {
     try {
         yield call(removeTodoItem, id);
-        const todos = yield select(getTodos);
-        const newTodoItems = todos.filter((item) => item.get('id') !== id);
-        yield put(setNewTodoItems(newTodoItems));
         yield put(filterAllItems())
     }
     catch (e) {
@@ -96,65 +84,35 @@ export const removeTodoItemSaga = function* removeTodoItemSaga({id}) {
 
 export const changeTodoItemSaga = function* changeTodoItemSaga({id, text}) {
     try {
-        const todos = yield select(getTodos);
-        const newTodoItems = todos.map((item) => {
-            let newItem;
-            if (item.get('id') === id) {
-                newItem = item.set('text', text)
-            } else {
-                newItem = item
-            }
-            return newItem
-        });
         yield call(changeTodoItem, text, id);
-        yield put(setNewTodoItems(newTodoItems));
     }
     catch (e){
         yield put({type: CHANGE_TODO_ITEM_FAILED, message: e.message});
     }
 };
 
-export const removeAllCompleteTodoItemsSaga = function* removeAllCompleteTodoItemsSaga(){
+export const removeAllCompleteTodoItemsSaga = function* removeAllCompleteTodoItemsSaga({todos}){
     try {
-        const todos = yield select(getTodos);
-        const newTodoItems = todos.filter((item) => !item.get('completed'));
         const removeAllCompleteTodoItems = (todos) => todos.map((item) => {
-            let result;
-            if ((item.get('completed'))) {
-                result = removeTodoItem(item.get('id'))
-            }
-            return result
+            if (item.get('completed')) {
+                return removeTodoItem(item.get('id'))
+            } return item
         });
         yield call(removeAllCompleteTodoItems, todos);
-        yield put(setNewTodoItems(newTodoItems));
     }
     catch (e) {
         yield put({type: REMOVE_ALL_COMPLETE_TODO_ITEM_FAILED, message: e.message});
     }
 };
 
-export const completeVisibleTodoItemsSaga = function* completeVisibleTodoItemsSaga() {
+export const completeVisibleTodoItemsSaga = function* completeVisibleTodoItemsSaga({filterTodos}) {
     try {
-        const todos = yield select(getTodos);
-        const filterTodos = yield select(getFilterTodos);
-        const newTodoItems = todos.map((item, index) => {
-            let newTodos;
-            if (item === filterTodos[index]) {
-                newTodos = item.set('completed', true)
-            } else {
-                newTodos = item;
-            }
-            return newTodos
-        });
         const completeTodoItems = (todos) => todos.map((item) => {
-            let result;
-            if (!(item.get('completed'))) {
-                result = completeTodoItem(item.get('id'), false)
-            }
-            return result
+            if (!item.get('completed')) {
+                return completeTodoItem(item.get('id'))
+            } return item
         });
         yield call(completeTodoItems, filterTodos);
-        yield put(setNewTodoItems(newTodoItems));
     }
     catch (e) {
         yield put({type: COMPLETE_VISIBLE_TODOS_FAILED, message: e.message});
@@ -166,7 +124,6 @@ export const removeAllTodoItemsSaga = function* removeAllTodoItemsSaga(){
         const todos = yield select(getTodos);
         const removeAllCompleteTodoItems = (items) => items.map((item) => removeTodoItem(item.get('id')));
         yield call(removeAllCompleteTodoItems, todos);
-        yield put(setNewTodoItems([]));
         yield put(filterAllItems())
     }
     catch (e) {
