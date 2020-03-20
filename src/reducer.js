@@ -10,7 +10,7 @@ import {
     COMPLETE_TODO_ITEM_FAILED,
     REMOVE_TODO_ITEM_FAILED,
     CHANGE_TODO_ITEM_FAILED,
-    REMOVE_ALL_TODO_ITEM_FAILED,
+    REMOVE_ALL_TODOS_FAILED,
     COMPLETE_VISIBLE_TODOS_FAILED,
     REMOVE_ALL_COMPLETE_TODO_ITEM_FAILED,
 
@@ -52,7 +52,7 @@ const errorReducer = (state = '', action) => {
             return {...state, errorMessage: action.message};
         case CHANGE_TODO_ITEM_FAILED:
             return {...state, errorMessage: action.message};
-        case REMOVE_ALL_TODO_ITEM_FAILED:
+        case REMOVE_ALL_TODOS_FAILED:
             return {...state, errorMessage: action.message};
         case COMPLETE_VISIBLE_TODOS_FAILED:
             return {...state, errorMessage: action.message};
