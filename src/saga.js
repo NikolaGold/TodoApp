@@ -10,6 +10,14 @@ import {
     REMOVE_ALL_TODO_ITEMS,
     REMOVE_ALL_COMPLETE_TODO_ITEMS,
     COMPLETE_VISIBLE_TODO_ITEMS,
+    TODOS_FETCH_FAILED,
+    ADD_TODD_ITEM_FAILED,
+    COMPLETE_TODO_ITEM_FAILED,
+    CHANGE_TODO_ITEM_FAILED,
+    REMOVE_ALL_COMPLETE_TODO_ITEM_FAILED,
+    REMOVE_TODO_ITEM_FAILED,
+    COMPLETE_VISIBLE_TODOS_FAILED,
+    REMOVE_ALL_TODOS_FAILED,
     todosFetchItem,
     setNewTodoItems,
     filterAllItems,
@@ -37,7 +45,7 @@ export const fetchTodoListSaga = function* fetchTodoListSaga() {
         yield put(todosFetchItem(todos.map((item) => Map(item))))
     }
     catch (e) {
-        yield put({type: 'TODOS_FETCH_FAILED', message: e.message});
+        yield put({type: TODOS_FETCH_FAILED, message: e.message});
     }
 };
 
@@ -49,7 +57,7 @@ export const addTodoItemSaga = function* addTodoItemSaga({text}){
         yield put(setNewTodoItems(newTodoItems));
     }
     catch (e){
-        yield put({type: 'ADD_TODD_ITEM_FAILED', message: e.message});
+        yield put({type: ADD_TODD_ITEM_FAILED, message: e.message});
     }
 };
 
@@ -69,7 +77,7 @@ export const completeTodoSaga = function* completeTodoSaga({complete, id}) {
         yield call(completeTodoItem, id, complete);
     }
     catch (e) {
-        yield put({type: 'COMPLETE_TODO_ITEM_FAILED', message: e.message});
+        yield put({type: COMPLETE_TODO_ITEM_FAILED, message: e.message});
     }
 };
 
@@ -82,7 +90,7 @@ export const removeTodoItemSaga = function* removeTodoItemSaga({id}) {
         yield put(filterAllItems())
     }
     catch (e) {
-        yield put({type: 'REMOVE_TODO_ITEM_FAILED', message: e.message});
+        yield put({type: REMOVE_TODO_ITEM_FAILED, message: e.message});
     }
 };
 
@@ -102,7 +110,7 @@ export const changeTodoItemSaga = function* changeTodoItemSaga({id, text}) {
         yield put(setNewTodoItems(newTodoItems));
     }
     catch (e){
-        yield put({type: 'CHANGE_TODO_ITEM_FAILED', message: e.message});
+        yield put({type: CHANGE_TODO_ITEM_FAILED, message: e.message});
     }
 };
 
@@ -121,7 +129,7 @@ export const removeAllCompleteTodoItemsSaga = function* removeAllCompleteTodoIte
         yield put(setNewTodoItems(newTodoItems));
     }
     catch (e) {
-        yield put({type: 'REMOVE_ALL_COMPLETE_TODO_ITEM_FAILED', message: e.message});
+        yield put({type: REMOVE_ALL_COMPLETE_TODO_ITEM_FAILED, message: e.message});
     }
 };
 
@@ -149,7 +157,7 @@ export const completeVisibleTodoItemsSaga = function* completeVisibleTodoItemsSa
         yield put(setNewTodoItems(newTodoItems));
     }
     catch (e) {
-        yield put({type: 'COMPLETE_VISIBLE_TODOS_FAILED', message: e.message});
+        yield put({type: COMPLETE_VISIBLE_TODOS_FAILED, message: e.message});
     }
 };
 
@@ -161,6 +169,6 @@ export const removeAllTodoItemsSaga = function* removeAllTodoItemsSaga(){
         yield put(setNewTodoItems([]));
     }
     catch (e) {
-        yield put({type: 'REMOVE_ALL_TODOS_FAILED', message: e.message});
+        yield put({type: REMOVE_ALL_TODOS_FAILED, message: e.message});
     }
 };
