@@ -146,14 +146,14 @@ export const completeVisibleTodoItemsSaga = function* completeVisibleTodoItemsSa
             }
             return newTodos
         });
-        const completeTodoItem = (todos) => todos.map((item) => {
+        const completeTodoItems = (todos) => todos.map((item) => {
             let result;
             if (!(item.get('completed'))) {
                 result = completeTodoItem(item.get('id'), false)
             }
             return result
         });
-        yield call(completeTodoItem, filterTodos);
+        yield call(completeTodoItems, filterTodos);
         yield put(setNewTodoItems(newTodoItems));
     }
     catch (e) {
@@ -167,6 +167,7 @@ export const removeAllTodoItemsSaga = function* removeAllTodoItemsSaga(){
         const removeAllCompleteTodoItems = (items) => items.map((item) => removeTodoItem(item.get('id')));
         yield call(removeAllCompleteTodoItems, todos);
         yield put(setNewTodoItems([]));
+        yield put(filterAllItems())
     }
     catch (e) {
         yield put({type: REMOVE_ALL_TODOS_FAILED, message: e.message});
