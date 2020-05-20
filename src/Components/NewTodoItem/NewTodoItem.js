@@ -5,12 +5,13 @@ import Button from 'react-bootstrap/Button';
 
 
 const NewTodoItemComponent = ({onAddTodoItem}) => {
-const [newTodoItem, setNewTodoItem] = useState('');
+    const [text, setText] = useState('');
+
     const handleClick = () => {
-        onAddTodoItem(newTodoItem);
-        setNewTodoItem('');
+        onAddTodoItem(text);
+        setText('');
     };
-    const clickOnEnter = (event) => {
+    const onSubmit = (event) => {
         if (event.keyCode === 13) {
             handleClick();
         }
@@ -21,9 +22,9 @@ const [newTodoItem, setNewTodoItem] = useState('');
             <input
                 className="form-control"
                 type="text"
-                value={newTodoItem}
-                onChange={(event) => setNewTodoItem(event.target.value)}
-                onKeyDown={(e) => clickOnEnter(e)}
+                value={text}
+                onChange={(event) => setText(event.target.value)}
+                onKeyDown={(e) => onSubmit(e)}
             />
             <Button className="btn-success" onClick={() => handleClick()}>
                 +

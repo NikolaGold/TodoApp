@@ -4,14 +4,21 @@ export const getFilterItemByStatus = (state) => state.get('filter').filterItemsB
 
 export const getErrorMessage = (state) => state.get('error').errorMessage;
 
-export const getFilterTodos = (state) => {
+export const getFilteredTodos = (state) => {
     const todos = getTodos(state);
     const filterItemByStatus = getFilterItemByStatus(state);
-    if (filterItemByStatus === 'complete'){
+    if (filterItemByStatus === 'complete') {
         return todos.filter((todo) => todo.get('completed'));
 
-    } else if (filterItemByStatus === 'incomplete'){
+    } else if (filterItemByStatus === 'incomplete') {
         return todos.filter((todo) => !todo.get('completed'));
     } else
-        return state.get('todos');
+        return todos;
 };
+
+export const getCompletedTodos = (state) => {
+    const filteredTodos = getFilteredTodos(state);
+    return filteredTodos.filter((todo) => todo.get('completed'))
+};
+
+export const getIsLoading = (state) => state.get('loading');

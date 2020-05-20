@@ -5,7 +5,7 @@ export const REMOVE_TODO_ITEM = 'REMOVE_TODO_ITEM';
 export const REMOVE_ALL_TODO_ITEMS = 'REMOVE_ALL_TODO_ITEMS';
 export const REMOVE_ALL_COMPLETE_TODO_ITEMS = 'REMOVE_ALL_COMPLETE_TODO_ITEMS';
 export const CHANGE_TODO_ITEM = 'CHANGE_TODO_ITEM';
-export const COMPLETE_TODO_ITEM = 'COMPLETE_TODO_ITEM';
+export const TOGGLE_COMPLETE_TODO_ITEM = 'TOGGLE_COMPLETE_TODO_ITEM';
 export const SET_NEW_TODO_ITEM = 'SET_NEW_TODO_ITEM';
 export const COMPLETE_VISIBLE_TODO_ITEMS = 'COMPLETE_VISIBLE_TODO_ITEMS';
 
@@ -22,14 +22,16 @@ export const COMPLETE_VISIBLE_TODOS_FAILED = 'COMPLETE_VISIBLE_TODOS_FAILED';
 export const REMOVE_ALL_COMPLETE_TODO_ITEM_FAILED = 'REMOVE_ALL_COMPLETE_TODO_ITEM_FAILED';
 export const REMOVE_ALL_TODOS_FAILED = 'REMOVE_ALL_TODOS_FAILED';
 
+export const LOADING_TODOS = 'LOADING_TODOS';
+
 export const todosFetchItem = (todos) => ({
     type: TODOS_FETCH_ITEM,
     todos,
 });
 
-export const completeTodoItem = (complete, id) => ({
-    type: COMPLETE_TODO_ITEM,
-    complete,
+export const toggleCompleteTodoItem = (isComplete, id) => ({
+    type: TOGGLE_COMPLETE_TODO_ITEM,
+    isComplete,
     id,
 });
 
@@ -43,8 +45,9 @@ export const removeTodoItem = (id) => ({
     id,
 });
 
-export const removeAllTodoItems = () => ({
+export const removeAllTodoItems = (todos) => ({
     type: REMOVE_ALL_TODO_ITEMS,
+    todos,
 });
 
 export const removeAllCompleteTodoItems = (todos) => ({
@@ -78,4 +81,9 @@ export const filterIncompleteItems = () => ({
 
 export const filterAllItems = () => ({
     type: FILTER_ALL_ITEMS,
+});
+
+export const loadingTodos = (isLoading) => ({
+    type: LOADING_TODOS,
+    isLoading,
 });

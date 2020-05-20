@@ -1,7 +1,7 @@
 import React from "react"
 import {Provider} from "react-redux"
 
-import TodoList from "./Components/TodoList";
+import TodoList from "./Components/TodoList/TodoList";
 import {store} from "./store";
 
 const App = () => {
@@ -9,7 +9,7 @@ const App = () => {
         <Provider store={store}>
             <div>
                 <TodoList/>
-                <footer  className="d-flex justify-content-center">
+                <footer className="d-flex justify-content-center">
                     Created by Nikola Goldova
                 </footer>
             </div>

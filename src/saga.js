@@ -2,7 +2,7 @@ import {put, takeLatest, select, call} from "redux-saga/effects";
 import {Map} from "immutable";
 
 import {
-    COMPLETE_TODO_ITEM,
+    TOGGLE_COMPLETE_TODO_ITEM,
     TODOS_FETCH,
     REMOVE_TODO_ITEM,
     CHANGE_TODO_ITEM,
@@ -20,14 +20,20 @@ import {
     REMOVE_ALL_TODOS_FAILED,
     todosFetchItem,
     setNewTodoItem,
-    filterAllItems,
+    loadingTodos,
 } from "./actions";
-import {getTodos, getFilterTodos} from "./selectors";
-import {fetchGetData, addTodoItem, changeTodoItem, removeTodoItem, completeTodoItem, inCompleteTodoItem} from "./Api/Api"
+import {
+    fetchGetData,
+    addTodoItem,
+    changeTodoItem,
+    removeTodoItem,
+    completeTodoItem,
+    inCompleteTodoItem
+} from "./Api/Api"
 
 export const rootSaga = function* rootSaga() {
     yield takeLatest(TODOS_FETCH, fetchTodoListSaga);
-    yield takeLatest(COMPLETE_TODO_ITEM, completeTodoSaga);
+    yield takeLatest(TOGGLE_COMPLETE_TODO_ITEM, completeTodoSaga);
     yield takeLatest(REMOVE_TODO_ITEM, removeTodoItemSaga);
     yield takeLatest(REMOVE_ALL_TODO_ITEMS, removeAllTodoItemsSaga);
     yield takeLatest(CHANGE_TODO_ITEM, changeTodoItemSaga);
@@ -38,46 +44,42 @@ export const rootSaga = function* rootSaga() {
 
 export const fetchTodoListSaga = function* fetchTodoListSaga() {
     try {
+        yield put(loadingTodos(true));
         const todos = yield call(fetchGetData, 'todos');
-        if (!todos.length) {
-            yield put(filterAllItems())
-        }
-        yield put(todosFetchItem(todos.map((item) => Map(item))))
-    }
-    catch (e) {
+        yield put(todosFetchItem(todos.map((item) => Map(item))));
+        yield put(loadingTodos(false));
+    } catch (e) {
         yield put({type: TODOS_FETCH_FAILED, message: e.message});
     }
 };
 
-export const addTodoItemSaga = function* addTodoItemSaga({text}){
+export const addTodoItemSaga = function* addTodoItemSaga({text}) {
     try {
         const newItem = yield call(addTodoItem, text);
         yield put(setNewTodoItem(newItem));
-    }
-    catch (e){
+    } catch (e) {
         yield put({type: ADD_TODD_ITEM_FAILED, message: e.message});
     }
 };
 
-export const completeTodoSaga = function* completeTodoSaga({complete, id}) {
+export const completeTodoSaga = function* completeTodoSaga({isComplete, id}) {
     try {
-        if(complete){
-            yield call(inCompleteTodoItem, id, complete);
+        if (isComplete) {
+            yield call(inCompleteTodoItem, id, isComplete);
         } else {
-            yield call(completeTodoItem, id, complete);
+            yield call(completeTodoItem, id, isComplete);
         }
-    }
-    catch (e) {
+    } catch (e) {
         yield put({type: COMPLETE_TODO_ITEM_FAILED, message: e.message});
     }
 };
 
 export const removeTodoItemSaga = function* removeTodoItemSaga({id}) {
     try {
+        yield put(loadingTodos(true));
         yield call(removeTodoItem, id);
-        yield put(filterAllItems())
-    }
-    catch (e) {
+        yield put(loadingTodos(false));
+    } catch (e) {
         yield put({type: REMOVE_TODO_ITEM_FAILED, message: e.message});
     }
 };
@@ -85,22 +87,23 @@ export const removeTodoItemSaga = function* removeTodoItemSaga({id}) {
 export const changeTodoItemSaga = function* changeTodoItemSaga({id, text}) {
     try {
         yield call(changeTodoItem, text, id);
-    }
-    catch (e){
+    } catch (e) {
         yield put({type: CHANGE_TODO_ITEM_FAILED, message: e.message});
     }
 };
 
-export const removeAllCompleteTodoItemsSaga = function* removeAllCompleteTodoItemsSaga({todos}){
+export const removeAllCompleteTodoItemsSaga = function* removeAllCompleteTodoItemsSaga({todos}) {
     try {
         const removeAllCompleteTodoItems = (todos) => todos.map((item) => {
             if (item.get('completed')) {
                 return removeTodoItem(item.get('id'))
-            } return item
+            }
+            return item
         });
+        yield put(loadingTodos(true));
         yield call(removeAllCompleteTodoItems, todos);
-    }
-    catch (e) {
+        yield put(loadingTodos(false));
+    } catch (e) {
         yield put({type: REMOVE_ALL_COMPLETE_TODO_ITEM_FAILED, message: e.message});
     }
 };
@@ -110,23 +113,24 @@ export const completeVisibleTodoItemsSaga = function* completeVisibleTodoItemsSa
         const completeTodoItems = (todos) => todos.map((item) => {
             if (!item.get('completed')) {
                 return completeTodoItem(item.get('id'))
-            } return item
+            }
+            return item
         });
+        yield put(loadingTodos(true));
         yield call(completeTodoItems, filterTodos);
-    }
-    catch (e) {
+        yield put(loadingTodos(false));
+    } catch (e) {
         yield put({type: COMPLETE_VISIBLE_TODOS_FAILED, message: e.message});
     }
 };
 
-export const removeAllTodoItemsSaga = function* removeAllTodoItemsSaga(){
+export const removeAllTodoItemsSaga = function* removeAllTodoItemsSaga({todos}) {
     try {
-        const todos = yield select(getTodos);
         const removeAllCompleteTodoItems = (items) => items.map((item) => removeTodoItem(item.get('id')));
+        yield put(loadingTodos(true));
         yield call(removeAllCompleteTodoItems, todos);
-        yield put(filterAllItems())
-    }
-    catch (e) {
+        yield put(loadingTodos(false));
+    } catch (e) {
         yield put({type: REMOVE_ALL_TODOS_FAILED, message: e.message});
     }
 };

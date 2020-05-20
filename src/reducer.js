@@ -15,11 +15,13 @@ import {
     REMOVE_ALL_TODOS_FAILED,
     COMPLETE_VISIBLE_TODOS_FAILED,
     REMOVE_ALL_COMPLETE_TODO_ITEM_FAILED,
-    COMPLETE_TODO_ITEM,
+    TOGGLE_COMPLETE_TODO_ITEM,
     REMOVE_TODO_ITEM,
     CHANGE_TODO_ITEM,
     REMOVE_ALL_TODO_ITEMS,
-    REMOVE_ALL_COMPLETE_TODO_ITEMS, COMPLETE_VISIBLE_TODO_ITEMS,
+    REMOVE_ALL_COMPLETE_TODO_ITEMS,
+    COMPLETE_VISIBLE_TODO_ITEMS,
+    LOADING_TODOS,
 } from "./actions";
 
 const todosReducer = (state = [], action) => {
@@ -28,7 +30,7 @@ const todosReducer = (state = [], action) => {
             return action.todos;
         case SET_NEW_TODO_ITEM:
             return [Map(action.todo), ...state];
-        case COMPLETE_TODO_ITEM:
+        case TOGGLE_COMPLETE_TODO_ITEM:
             return state.map((item) => {
                 if (item.get('id') === action.id) {
                     return item.set('completed', !action.complete)
@@ -53,13 +55,22 @@ const todosReducer = (state = [], action) => {
         case COMPLETE_VISIBLE_TODO_ITEMS:
             return state.map((item) => {
                 if (action.filterTodos.includes(item) && !item.get('completed')) {
-                   return item.set('completed', true)
+                    return item.set('completed', true)
                 } else {
                     return item;
                 }
             });
         default:
             return state;
+    }
+};
+
+const loadingReducer = (state = false, action) => {
+    switch (action.type) {
+        case LOADING_TODOS:
+            return action.isLoading;
+        default:
+            return {...state};
     }
 };
 
@@ -72,7 +83,7 @@ const filterReducer = (state = '', action) => {
         case FILTER_ALL_ITEMS:
             return {...state, filterItemsByStatus: 'all'};
         default:
-            return {...state, filterItemsByStatus: 'all'};
+            return {...state};
     }
 };
 
@@ -103,5 +114,6 @@ const errorReducer = (state = {}, action) => {
 export const allReducer = combineReducers({
     todos: todosReducer,
     filter: filterReducer,
+    loading: loadingReducer,
     error: errorReducer,
 });

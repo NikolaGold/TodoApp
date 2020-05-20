@@ -1,5 +1,12 @@
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
+## How to setup the project
+
+- Download the backend on https://github.com/morosystems/todo-be 
+- Run backend
+- Run frontend via the npm start command
+- Project is running
+
 ## Available Scripts
 
 In the project directory, you can run:
@@ -19,5 +26,4 @@ It correctly bundles React in production mode and optimizes the build for the be
 
 The build is minified and the filenames include the hashes.<br />
 Your app is ready to be deployed!
-
-
+ 

@@ -4,53 +4,65 @@ import moment from "moment";
 import Button from "react-bootstrap/Button";
 
 import "./TodoItem.css"
-import {completeTodoItem, removeTodoItem, changeTodoItem} from "../../actions";
+import {toggleCompleteTodoItem, removeTodoItem, changeTodoItem} from "../../actions";
 
-export const TodoItemComponent = ({text, complete, onCompleteTodoItem, onRemoveTodoItem, onChangeTodoItem, createdDate}) => {
-    const [isEditTodoItem, setIsTodoEditItem] = useState(false);
-    const [todoItemText, setChangeTextItem] = useState(text);
-    const clickOnEnter = (event) => {
+export const TodoItemComponent = ({text, completed, onToggleComplete, onRemoveTodoItem, onChangeTodoItem, createdDate}) => {
+    const [isInEditMode, setEditMode] = useState(false);
+    const [textItem, setChangeText] = useState(text);
+
+    const handleEditMode = () => {
+        !isInEditMode && setEditMode(!isInEditMode)
+    };
+    const onSubmit = (event) => {
         if (event.keyCode === 13) {
-            setIsTodoEditItem(!isEditTodoItem);
-            onChangeTodoItem(todoItemText)
+            setEditMode(!isInEditMode);
+            onChangeTodoItem(textItem);
         }
     };
+
     return (
         <tr className="row">
             <td className="col-1">
-                <input type="checkbox" checked={complete} onChange={() => onCompleteTodoItem()}/>
+                <input type="checkbox" checked={completed} onChange={() => onToggleComplete()}/>
             </td>
             <td className="col-2">
                 {moment(createdDate).format('DD-MM-YYYY')}
             </td>
-            <td onDoubleClick={() => !isEditTodoItem && setIsTodoEditItem(!isEditTodoItem)} className={complete ? "complete-todo-item col-7" : "col-7"} >
-                {isEditTodoItem ?
+            <td
+                onDoubleClick={() => handleEditMode()}
+                className={completed ? "complete-todo-item col-7" : "col-7"}
+            >
+                {isInEditMode ?
                     (<input type="text"
                             className="form-control"
-                            value={todoItemText}
-                            onKeyDown={(e) => clickOnEnter(e)}
-                            onChange={(event) => setChangeTextItem(event.target.value)}/>)
+                            value={textItem}
+                            onKeyDown={(e) => onSubmit(e)}
+                            onChange={(event) => setChangeText(event.target.value)}/>)
                     :
                     text
                 }
             </td>
             <td className="col-1">
-                {!isEditTodoItem ? (
-                    <Button
-                        className="btn-dark"
-                        onClick={() => {setIsTodoEditItem(!isEditTodoItem)}}
-                    >
-                        Edit
-                    </Button>
-                    ) :
+                {isInEditMode ?
                     (
                         <Button
                             className="btn-success"
                             onClick={() => {
-                                setIsTodoEditItem(!isEditTodoItem);
-                                onChangeTodoItem(todoItemText)}}
+                                setEditMode(!isInEditMode);
+                                onChangeTodoItem(textItem)
+                            }}
                         >
                             ✔
+                        </Button>
+                    ) :
+                    (
+                        <Button
+                            className="btn-dark"
+                            onClick={() => {
+                                setEditMode(!isInEditMode)
+                            }}
+                        >
+                            Edit
                         </Button>
                     )
                 }
@@ -64,19 +76,19 @@ export const TodoItemComponent = ({text, complete, onCompleteTodoItem, onRemoveT
     )
 };
 
-const mapDispatchToProps = (dispatch, {complete, id}) => ({
-    onCompleteTodoItem: () => dispatch(completeTodoItem(complete, id)),
+const mapDispatchToProps = (dispatch, {completed, id}) => ({
+    onToggleComplete: () => dispatch(toggleCompleteTodoItem(completed, id)),
     onRemoveTodoItem: () => dispatch(removeTodoItem(id)),
     onChangeTodoItem: (changeText) => dispatch(changeTodoItem(id, changeText)),
 
 });
 
-const mergeProps = (mapStateProps, {onCompleteTodoItem, onRemoveTodoItem, onChangeTodoItem}, {text, complete, visible, createdDate}) => ({
+const mergeProps = (mapStateProps, {onToggleComplete, onRemoveTodoItem, onChangeTodoItem}, {text, completed, visible, createdDate}) => ({
     text,
-    complete,
+    completed,
     visible,
     createdDate,
-    onCompleteTodoItem,
+    onToggleComplete,
     onRemoveTodoItem,
     onChangeTodoItem,
 });
