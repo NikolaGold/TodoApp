@@ -2,17 +2,17 @@ import React, {useState} from "react";
 import Button from "react-bootstrap/Button";
 import Modal from "react-bootstrap/Modal";
 
-const TodoModal = ({message, title, textOnButton}) => {
+export default ({message, title, textOnButton}) => {
 
     const [isOpen, setIsOpen] = useState(false);
 
     const handleClose = () => setIsOpen(false);
-    const handleShow = () => setIsOpen(true);
+    const handleOpen = () => setIsOpen(true);
 
     return (
         <>
             <div className="d-flex justify-content-center">
-                <Button variant="warning" onClick={handleShow}>{textOnButton}</Button>
+                <Button variant="warning" onClick={handleOpen}>{textOnButton}</Button>
             </div>
             <Modal show={isOpen} onHide={handleClose}>
                 <Modal.Header closeButton>
@@ -28,4 +28,3 @@ const TodoModal = ({message, title, textOnButton}) => {
         </>
     )
 };
-export default Modal;

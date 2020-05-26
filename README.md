@@ -24,6 +24,12 @@ You will also see any lint errors in the console.
 Builds the app for production to the `build` folder.<br />
 It correctly bundles React in production mode and optimizes the build for the best performance.
 
+### `npm run lint`
+It checks files and find lint errors and warnings.
+
+### `npm run lint:fix`
+Refactor lint errors in the project.
+
 The build is minified and the filenames include the hashes.<br />
 Your app is ready to be deployed!
  
